@@ -2,7 +2,7 @@
 
 ## how to use
 1. clone this page
-2. cd ds-mylab-1
+2. change directory
 3. docker-compose up -d
 4. Launch your browser and access localhost:8888
 
