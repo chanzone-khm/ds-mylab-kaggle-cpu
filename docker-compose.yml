@@ -2,9 +2,21 @@ version: '3'
 
 services:
   jupyter:
-    build: .
+    build:
+      context: .
+      # zscaler 証明書対応 https://help.zscaler.com/ja/zia/adding-custom-certificate-application-specific-trust-store
+      args:
+        - BUILD_ENV=${BUILD_ENV:-development} # ビルド環境が開発(development)か本番(production)かを識別する
+        - CERT_FILE=${CERT_FILE:-/zcc_certificate/zscaler.crt} # SSL/TLS通信で使用されるカスタムCA証明書のファイルパスを指定するために使用され、これにより信頼できる証明書をコンテナに追加することができます 
+
+    environment:
+      - BUILD_ENV=${BUILD_ENV:-development}
+      - CERT_FILE=${CERT_FILE:-/zcc_certificate/zscaler.crt}
     ports: 
       - '8080:8888' 
     volumes:
       - '.:/work'
+      - './zcc_certificate:/zcc_certificate'
     #working_dir: /work
+    env_file:
+      - docker.env

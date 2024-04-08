@@ -1,11 +1,11 @@
 ﻿FROM gcr.io/kaggle-images/python:latest
 
-# update
-RUN apt-get -y update --allow-releaseinfo-change && apt-get -y upgrade
-RUN apt-get -y update --fix-missing && apt-get -y upgrade
+# Add Zscaler certificate
+COPY ${CERT_FILE} /usr/local/share/ca-certificates/zscaler.crt
+RUN update-ca-certificates
 
-# install basic packages
-RUN apt-get install -y \
+# update and install basic packages
+RUN apt-get update --allow-releaseinfo-change && apt-get upgrade -y && apt-get install -y \
   sudo \
   wget \
   bzip2 \
@@ -13,11 +13,13 @@ RUN apt-get install -y \
   zip \
   unzip \
   ca-certificates \
-  curl
+  curl \
+  tzdata \
+  git-all \
+  && curl -sL https://deb.nodesource.com/setup_14.x | bash - \
+  && apt-get install -y nodejs
 
-# Install nodejs and Python packages
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
-RUN apt-get install -y nodejs
+# Install Python packages
 RUN pip install --no-cache-dir \
   black \
   jupyterlab \
@@ -28,13 +30,6 @@ RUN pip install --no-cache-dir \
   ipywidgets \
   import-ipynb \
   jupyterlab-unfold
-
-# Avoid timezone prompt
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update \
-  && apt-get install -y tzdata git-all
-
-
 
 WORKDIR /work
 
