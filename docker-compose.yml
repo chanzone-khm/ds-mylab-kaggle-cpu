@@ -3,7 +3,7 @@ version: '3'
 services:
   jupyter:
     build: .
-    ports:
+    ports: 
       - '8080:8888' 
     volumes:
       - '.:/work'
